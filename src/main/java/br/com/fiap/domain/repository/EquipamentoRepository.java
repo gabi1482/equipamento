@@ -34,12 +34,7 @@ public class EquipamentoRepository implements Repository<Equipamento, Long>  {
 
     @Override
     public Equipamento persist(Equipamento equipamento) {
-        var sql = "BEGIN" +
-                " INSERT INTO EQUIPAMENTO (NM_EQUIPAMENTO) " +
-                "VALUES (?) " +
-                "returning ID_EQUIPAMENTO into ?; " +
-                "END;" +
-                "";
+        var sql = "BEGIN" + " INSERT INTO equipamento (NM_EQUIPAMENTO,DS_EQUIPAMENTO)" +  "VALUES (?,?) " + "returning ID_EQUIPAMENTO into ?; " + "END;" + "";
 
 
 
@@ -51,9 +46,10 @@ public class EquipamentoRepository implements Repository<Equipamento, Long>  {
         try {
             cs = connection.prepareCall( sql );
             cs.setString( 1, equipamento.getNome() );
-            cs.registerOutParameter( 2, Types.BIGINT );
+            cs.setString( 2, equipamento.getDescrição() );
+            cs.registerOutParameter( 3, Types.BIGINT );
             cs.executeUpdate();
-            equipamento.setId( cs.getLong( 2 ) );
+            equipamento.setId( cs.getLong( 3 ) );
             cs.close();
             connection.close();
         } catch (SQLException e) {
@@ -162,7 +158,7 @@ public class EquipamentoRepository implements Repository<Equipamento, Long>  {
 
         try{
             ps = connection.prepareStatement(sql);
-            ps.setLong(2,id);
+            ps.setLong(1,id);
             int itensRemovidos = ps.executeUpdate();
             ps.close();
             connection.close();
